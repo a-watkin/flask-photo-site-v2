@@ -1,5 +1,18 @@
-from database_interface import Database
-from password_util import PasswordUtil
+import os
+import sys
+
+
+try:
+    from common.utils import get_id, name_util
+    from database_interface import Database
+except Exception as e:
+    sys.path.append('/home/a/projects/flask-photo-site')
+    print(sys.path)
+
+    for fuckyoupython in sys.path:
+        print('\n', fuckyoupython)
+    from common.password_util import PasswordUtil
+    from database_interface import Database
 
 
 class Admin(object):
@@ -13,14 +26,14 @@ class Admin(object):
             values ("{}", "{}", "{}")
             '''.format(
                 username,
-                username,
+                password,
                 PasswordUtil.hash_password(password))
         )
 
 
 def main():
     a = Admin()
-    a.make_account('', '')
+    a.make_account('a', 'a')
 
 
 if __name__ == "__main__":

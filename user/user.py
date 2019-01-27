@@ -1,12 +1,13 @@
-
+import os
+import sys
 
 try:
     from .blog_db import Database
-
     from .password_util import PasswordUtil
 except Exception as e:
-    from database_interface import Database
-
+    print('import problem, ', e)
+    sys.path.append(os.getcwd())
+    from common.db_interface import Database
     from common.password_util import PasswordUtil
 
 
@@ -35,9 +36,10 @@ class User(object):
         """
         db_resp = self.db.get_row('user', 'username', self.username)
 
-        # print(db_resp)
+        print(db_resp)
         if db_resp:
-            return db_resp[0]['hash']
+            # PROLEM HERE
+            return db_resp[0]['hash_value']
         # changed here because the db no longer returns a tuple
         # return db_resp[2]
 

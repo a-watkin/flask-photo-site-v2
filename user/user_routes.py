@@ -20,9 +20,10 @@ def login():
         current_user = user
 
         if user.check_for_username() and user.check_password():
+            print('\nLOGGIN WORKED\n')
             flash('Welcome back {}'.format(username))
             session['logged_in'] = True
-            return redirect(url_for('blog.get_posts'))
+            return redirect(url_for('get_photos'))
         else:
             status_code = 401
             flash('Wrong username and/or password', error)
