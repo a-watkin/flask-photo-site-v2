@@ -1,6 +1,7 @@
 import json
 import os
 import datetime
+import subprocess
 import uuid
 import urllib.parse
 from functools import wraps
@@ -19,10 +20,16 @@ from tag import Tag
 from uploaded_photos import UploadedPhotos
 
 import name_util
-from user import User
+# from user import User
 from resize_photo import PhotoUtil
 
 from exif_util import ExifUtil
+
+
+# decomposing imports
+from user.user_routes import user_blueprint
+
+DEVELOPMENT = True
 
 
 UPLOAD_FOLDER = os.getcwd() + '/static/images'
@@ -53,17 +60,15 @@ up = UploadedPhotos()
 
 
 """
-$ export FLASK_APP=app.py
-$ export FLASK_ENV=development
-Make it reload on changes:
-$ export FLASK_DEBUG=1
-$ flask run
-
-
 lsof -w -n -i tcp:5000
 kill -9 processId
 """
+
+
 current_user = None
+
+
+app.register_blueprint(user_blueprint, url_prefix="/user")
 
 
 def show_uplaoded(json_data):
@@ -1047,8 +1052,34 @@ def about():
     render_template('about.html'), 200
 
 
+# $ export FLASK_APP = app.py
+# $ export FLASK_ENV = development
+# Make it reload on changes:
+# $ export FLASK_DEBUG = 1
+# $ flask run
+
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        debug=True
-    )
+    export_settings = [
+        "export FLASK_APP = app.py",
+        "export FLASK_ENV = development",
+        "export FLASK_DEBUG = 1"
+    ]
+
+    for command in export_settings:
+        print(command.split())
+        process = subprocess.Popen(
+            command.split(),
+            stdout=subprocess.PIPE,
+            shell=True
+        )
+
+    if DEVELOPMENT:
+        app.run(
+            debug=True,
+            port=5050
+        )
+    else:
+        app.run(
+            debug=False,
+            host='0.0.0.0'
+        )
