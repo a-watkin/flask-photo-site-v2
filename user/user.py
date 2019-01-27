@@ -79,6 +79,7 @@ class User(object):
 
 
 def main():
+    # my flickr user_id: 9604217@N03
     u = User('a', 'a')
     # hased password has been inserted
     # print(u.get_hashed_password('a'))
