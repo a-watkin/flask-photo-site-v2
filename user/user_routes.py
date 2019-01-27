@@ -36,7 +36,7 @@ def logout():
     session.pop('logged_in', None)
     # flash('You have been logged out.')
     # return render_template('login.html')
-    return redirect(url_for('blog.get_posts'))
+    return redirect('/')
 
 
 @user_blueprint.route('/account', methods=['GET', 'POST'])
