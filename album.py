@@ -4,7 +4,7 @@ import uuid
 
 
 from database_interface import Database
-import name_util
+import common.name_util
 
 
 class Album(object):

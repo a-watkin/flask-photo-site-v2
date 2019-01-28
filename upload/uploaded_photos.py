@@ -6,8 +6,8 @@ import datetime
 
 from database_interface import Database
 from tag import Tag
-import name_util
-from exif_util import ExifUtil
+import common.name_util
+from common.exif_util import ExifUtil
 # from exif_util import ExifUtil
 
 

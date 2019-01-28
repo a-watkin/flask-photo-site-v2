@@ -17,17 +17,18 @@ from database_interface import Database
 from photo import Photos
 from album import Album
 from tag import Tag
-from uploaded_photos import UploadedPhotos
+from upload.uploaded_photos import UploadedPhotos
 
-import name_util
+import common.name_util
 # from user import User
-from resize_photo import PhotoUtil
+from common.resize_photo import PhotoUtil
 
-from exif_util import ExifUtil
+from common.exif_util import ExifUtil
 
 
 # decomposing imports
 from user.user_routes import user_blueprint
+from upload.upload_routes import upload_blueprint
 from common.utils import login_required
 
 DEVELOPMENT = True
@@ -40,13 +41,7 @@ app = Flask('app')
 app = Flask(__name__.split('.')[0])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# some change with flask?
-# for some reason it accepts secret_key but nothing else
-# without doing this
-# app.config['USERNAME'] = 'admin'
-# app.config['PASSWORD'] = 'admin'
-# so secret key is built in from the get go
-# app.config['SECRET_KEY'] = 'secret'
+
 app.config['SECRET_KEY'] = b'\xef\x03\xc8\x96\xb7\xf9\xf3^\x16\xcbz\xd7\x83K\xfa\xcf'
 """
 $ python -c 'import os; print(os.urandom(16))'

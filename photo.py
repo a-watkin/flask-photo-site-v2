@@ -5,7 +5,7 @@ import urllib.parse
 
 from tag import Tag
 from album import Album
-import name_util
+import common.name_util
 
 
 class Photos(object):
