@@ -5,35 +5,30 @@ import subprocess
 import uuid
 import urllib.parse
 from functools import wraps
-
-
+# flask imports
 from flask import Flask, render_template, request, session, flash, redirect, url_for, g, jsonify
 from flask import json
 from werkzeug.utils import secure_filename
-# from wtforms import Form, BooleanField, StringField, PasswordField, validators
-
 # my modules
 from database_interface import Database
 from photo import Photos
 from album import Album
 from tag import Tag
 from upload.uploaded_photos import UploadedPhotos
-
+# my common modules
 import common.name_util
-# from user import User
 from common.resize_photo import PhotoUtil
-
 from common.exif_util import ExifUtil
-
-
 # decomposing imports
 from user.user_routes import user_blueprint
-from upload.upload_routes import upload_blueprint
 from common.utils import login_required
+from common import name_util
+# Blueprint imports
+from upload.upload_routes import upload_blueprint
+from api.api_routes import api_blueprint
+
 
 DEVELOPMENT = True
-
-
 UPLOAD_FOLDER = os.getcwd() + '/static/images'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -43,10 +38,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 app.config['SECRET_KEY'] = b'\xef\x03\xc8\x96\xb7\xf9\xf3^\x16\xcbz\xd7\x83K\xfa\xcf'
-"""
-$ python -c 'import os; print(os.urandom(16))'
-b'_5#y2L"F4Q8z\n\xec]/'
-"""
+
 
 db = Database('eigi-data.db')
 p = Photos()
@@ -54,17 +46,9 @@ a = Album()
 t = Tag()
 up = UploadedPhotos()
 
-
-"""
-lsof -w -n -i tcp:5000
-kill -9 processId
-"""
-
-
-current_user = None
-
-
+# Blueprints
 app.register_blueprint(user_blueprint, url_prefix="/user")
+app.register_blueprint(api_blueprint, url_prefix="/api")
 
 
 def show_uplaoded(json_data):
@@ -222,19 +206,6 @@ def discard_photo():
 @login_required
 def upload_select_album():
     return render_template('upload_select_album.html'), 200
-
-
-@app.route('/api/uploaded/title', methods=['GET', 'POST'])
-@login_required
-def update_title():
-    d = request.get_json()
-    title = d['title'].strip()
-    title = name_util.make_encoded(title)
-
-    if up.update_title(d['photoId'], title):
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-    else:
-        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
 
 @app.route('/api/upload/photostream', methods=['GET', 'POST'])

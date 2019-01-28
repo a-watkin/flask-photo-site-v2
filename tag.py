@@ -3,7 +3,7 @@ import sqlite3
 
 
 from database_interface import Database
-import common.name_util
+from common import name_util
 
 
 class Tag(object):
