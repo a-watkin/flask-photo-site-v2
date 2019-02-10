@@ -1,13 +1,24 @@
 import os
-import uuid
-import sqlite3
 import json
 import datetime
 
-from database_interface import Database
-from tag import Tag
-import common.name_util
-from common.exif_util import ExifUtil
+from flask import session
+
+import sys
+
+try:
+    from database_interface import Database
+    from tag import Tag
+    import common.name_util
+    from common.exif_util import ExifUtil
+
+except Exception as e:
+    # print('import problem, ', e)
+    sys.path.append('/home/a/projects/flask-photo-site')
+    from common.db_interface import Database
+    from common.password_util import PasswordUtil
+
+
 # from exif_util import ExifUtil
 
 
@@ -21,41 +32,27 @@ class UploadedPhotos(object):
     """
 
     def __init__(self):
-        self.db = Database('eigi-data.db')
-        self.user_id = '28035310@N00'
-        self.tag = Tag()
+        self.db = Database()
+        # self.user_id = '28035310@N00'
+        # self.tag = Tag()
+
+    def show_uploaded(self):
+        """
+        Return true is the uploaded_photo table is not empty.
+        """
+        uploaded_photos = self.db.get_query_as_list(
+            '''
+            select * from upload_photo
+            '''
+        )
+
+        if uploaded_photos:
+            return True
+        return False
 
     def save_photo(self, photo_id, date_uploaded, original, large_square, exif_data, date_taken):
-        # print('original', original)
-        # print('original file path', os.path.join(original))
-        # print()
-        # print(os.getcwd() + original)
-        # print()
-
-        # print(ExifUtil.read_exif('test_portrait.jpg'))
-        # print(ExifUtil.get_datetime_taken('test_portrait.jpg'))
-
         # date_taken = None
         exif_id = str(int(uuid.uuid4()))[0:10]
-
-        # a photo may not have any exif data
-        # try:
-
-        #     date_taken = ExifUtil.get_datetime_taken(os.getcwd() + original)
-        #     # exif_data = ExifUtil.read_exif(os.getcwd() + original)
-
-        #     # print()
-        #     # print(exif_data)
-        #     # print('date_taken', date_taken)
-        #     # print()
-
-        # except Exception as e:
-        #     print('problem reading exif data ', e)
-
-        # if exif_data is not None:
-        #     # make into a blob
-        #     exif_data = json.dumps(exif_data)
-        #     # print(exif_data)
 
         # insert exif data
         self.db.insert_data(
@@ -65,9 +62,6 @@ class UploadedPhotos(object):
             table='exif'
         )
 
-        # print(original)
-        # get_datetime_taken(os.getcwd() + original)
-        # print(photo_id, self.user_id)
         # write to the uploaded_photo table
         query_string = '''
         insert into upload_photo(photo_id, user_id)
@@ -219,20 +213,6 @@ class UploadedPhotos(object):
         print(data)
 
         return {'photos': data}
-
-        # cur_dir = os.getcwd()
-
-        # a_dict = {}
-        # count = 0
-        # for d in data:
-        #     a_dict[count] = d
-        #     count += 1
-        #     # d['original'] = cur_dir + d['original']
-        #     # d['large_square'] = cur_dir + d['large_square']
-
-        # rtn_dict = {'photos': a_dict}
-
-        # return rtn_dict
 
     def discard_photo(self, photo_id):
         """
@@ -442,33 +422,7 @@ class UploadedPhotos(object):
 def main():
     up = UploadedPhotos()
 
-    print(len(up.get_uploaded_photos()['photos']))
-
-    # print(up.add_all_to_album('eh'))
-
-    # up.add_to_photostream(
-    #     {'0': {'date_posted': None, 'date_taken': None, 'date_updated': None, 'date_uploaded': '2018-12-11 08:21:10.870694', 'images_id': None, 'large': None, 'large_square': '/static/images/2018/12/test_landscape_1125251958_lg_sqaure.jpg', 'medium': None, 'medium_640': None,
-    #            'original': '/static/images/2018/12/test_landscape_1125251958.jpg', 'photo_id': 1125251958, 'photo_title': None, 'small': None, 'small_320': None, 'square': None, 'tags': ['twat', 'slut'], 'thumbnail': None, 'user_id': '28035310@N00', 'views': 0}}
-    # )
-
-    # print(up.update_title(1269676143, 'test title'))
-
-    # print(up.get_uploaded_photos())
-
-    # 1326226897
-    # print(up.discard_photo(1326226897))
-
-    # up.save_photo('1234', '2018-12-09 03:52:57.905416')
-    # up.save_photo(
-    #     '0001',
-    #     '2018-12-09 03:52:57.905416',
-    #     '/home/a/projects/flask-photo-site/static/images/2018/12/test_portrait_resized.jpg')
-
-    # up.save_photo(
-    #     2429676854, '2018-12-09 21:16:43.708922', '/2018/12/test_landscape_3400128875_lg_sqaure.jpg', '/2018/12/test_landscape_3400128875_lg_sqaure.jpg'
-    # )
-
-    # print(up.get_uploaded_photos_test())
+    print(up.show_uplaoded())
 
 
 if __name__ == "__main__":
